@@ -1,0 +1,22 @@
+node_modules/
+.next/
+.turbo/
+dist/
+out/
+
+.env
+.env.local
+.env.*.local
+.vercel
+
+.DS_Store
+*.log
+
+# Participant-supplied screenshots are kept out of git by default
+design-input/*
+!design-input/.gitkeep
+
+# Generated artifacts from running the kit
+generated-app/
+brief.json
+design.md
