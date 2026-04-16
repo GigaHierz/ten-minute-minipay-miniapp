@@ -27,8 +27,6 @@ Use this exact structure. Keep it short — 60 lines max. The build agent reads 
 ```markdown
 # Design spec
 
-> Generated for the demo path. For a production design system, swap this for a real `tailwind.config.ts` + component library. See `05-production.md`.
-
 ## Mood
 One paragraph capturing the vibe.
 
@@ -58,13 +56,6 @@ One paragraph capturing the vibe.
 - Max content width: 500px
 - Page padding: 16px
 ```
-
-## Important callout to the participant
-
-After writing `design.md`, say exactly this once:
-> "This is a markdown design spec — perfect for a demo. For a real product you'd want a Tailwind config plus a component library; that's covered in `05-production.md`. Want me to do that now, or keep moving and ship the demo?"
-
-Default to "keep moving." Only switch to Tailwind output if the participant explicitly asks.
 
 ## Then say
 > "Design locked. Building now."

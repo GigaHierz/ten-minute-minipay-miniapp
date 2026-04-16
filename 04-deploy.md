@@ -1,66 +1,48 @@
 # Phase 04 — Deploy
 
-> ⏱ Target: 1–2 minutes. New GitHub repo, push, Vercel deploy, return URLs.
-
-## Demo-vs-production callout (say this once)
-> "Heads up: I'm deploying without env vars or a custom domain. To put this on a real URL with Privy auth and proper RPC keys, see `05-production.md`."
+> ⏱ Target: 1–2 minutes. Vercel deploy from the repo root, hand back the URL, stop.
 
 ## Inputs
-- Working app under `generated-app/`
-- `gh` and `vercel` already authed (verified in phase 00)
+- App scaffolded at the repo root (workshop folder === app folder)
+- `vercel` already authed (maintainer setup — see `SETUP.md`)
 
-## Step 1 — Initialize git inside `generated-app/`
+**Do not** run `git init` or `gh repo create`. The workshop folder is already a git repo (the participant cloned it). Pushing to their own GitHub is an optional post-workshop one-liner, surfaced in the final message but not executed by you.
 
-```bash
-cd generated-app
-git init
-git add .
-git commit -m "Initial commit — built with ten-minute-minipay-miniapp kit"
-```
+## Step 1 — Deploy to Vercel
 
-## Step 2 — Create the GitHub repo and push
-
-Pick a slug from `brief.json.pitch` (kebab-case, ≤ 40 chars). If it conflicts with an existing repo, append `-2`, `-3`, etc.
+From the repo root:
 
 ```bash
-gh repo create <slug> --public --source . --push --description "<from brief.tweet>"
-```
-
-Capture the resulting repo URL — you'll need it.
-
-## Step 3 — Deploy to Vercel
-
-```bash
-vercel link --yes --project <slug>
 vercel --prod --yes
 ```
 
 `--yes` accepts all defaults non-interactively. Capture the production URL from stdout.
 
-If `vercel link` fails because the project doesn't exist, run `vercel` (no flags) once to create it interactively, then `vercel --prod --yes`.
+If `vercel` prompts to link or create a project on first run, accept defaults (new project, current directory, detected Next.js framework). The deploy proceeds after.
 
-If the build fails on Vercel, read the actual error in `vercel inspect <deployment-url> --logs`. Common fixes:
-- Missing dep → `pnpm add` it locally, commit, push, redeploy
-- Type error → fix it, commit, push, redeploy
-- Don't disable type checking to make it pass.
-
-## Step 4 — Commit `brief.json` and `design.md` to the new repo
-
-These should travel with the app so future sessions can see what was built and why.
+If the build fails on Vercel, read the actual error:
 
 ```bash
-cp ../brief.json ../design.md .
-git add brief.json design.md
-git commit -m "Add brief and design spec"
-git push
+vercel inspect <deployment-url> --logs
 ```
 
-## Step 5 — Report success
+Common fixes:
+- Missing dep → `pnpm add` it, redeploy with `vercel --prod --yes`
+- Type error → fix it, redeploy
+- Don't disable type checking to make the build pass
 
-Tell the participant exactly this:
+## Step 2 — Report success
 
-> "Done. Your repo: <repo URL>. Live: <vercel URL>. Open the live URL inside the MiniPay browser to see auto-connect work.
+Tell the participant exactly this, substituting the real URL:
+
+> "You're live: **<vercel URL>**. Open it inside the MiniPay browser and you should see auto-connect work.
 >
-> To take this to production — Privy login for non-MiniPay users, real RPC keys, custom domain, env management — open the generated repo and follow `05-production.md`. That's a separate session."
+> Your app lives right here in this folder — alongside your `brief.json` and `design.md`. If you want to put it on your own GitHub (optional):
+>
+> ```bash
+> gh repo create <your-app-name> --public --source . --push
+> ```
+>
+> That's it — you've built and shipped a MiniPay mini-app."
 
-Stop. Do not start phase 05.
+Stop.
