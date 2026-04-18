@@ -1,22 +1,16 @@
 "use client";
 
-import { useAccount, useBalance } from "wagmi";
+import React from "react";
+import { useConnection } from "wagmi";
+import { CELO_TOKENS } from "./celo-tokens";
+import { useTokenBalances } from "./use-token-balances";
+import { shortenHash } from "./minipay-helpers";
 
-// Celo mainnet stablecoin addresses
-const cUSD_ADDRESS = "0x765de816845861e75a25fca122bb6898b8b1282a" as const;
-const USDC_ADDRESS = "0xcebA9300f2b948710d2653dD7B07f33A8B32118C" as const;
-const USDT_ADDRESS = "0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e" as const;
-
-function Row({
-  address,
-  token,
-  symbol,
-}: {
-  address: `0x${string}`;
-  token?: `0x${string}`;
+function BalanceRow({ symbol, balance, isLoading }: {
   symbol: string;
+  balance: string;
+  isLoading: boolean;
 }) {
-  const { data, isLoading } = useBalance({ address, token });
   return (
     <div
       style={{
@@ -28,16 +22,19 @@ function Row({
     >
       <span style={{ color: "var(--text-muted, #888)" }}>{symbol}</span>
       <span style={{ fontVariantNumeric: "tabular-nums" }}>
-        {isLoading
-          ? "…"
-          : parseFloat(data?.formatted || "0").toFixed(4)}
+        {isLoading ? "…" : parseFloat(balance || "0").toFixed(4)}
       </span>
     </div>
   );
 }
 
 export function UserBalance() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useConnection();
+
+  // Get all supported tokens for current chain
+  const tokenConfigs = Object.values(CELO_TOKENS);
+  const { balances, isLoading } = useTokenBalances(tokenConfigs);
+
   if (!isConnected || !address) return null;
 
   return (
@@ -57,10 +54,10 @@ export function UserBalance() {
           style={{
             fontSize: 12,
             color: "var(--text-muted, #888)",
-            wordBreak: "break-all",
+            fontFamily: "monospace",
           }}
         >
-          {address}
+          {shortenHash(address)}
         </div>
       </header>
       <div
@@ -69,10 +66,14 @@ export function UserBalance() {
           paddingTop: 8,
         }}
       >
-        <Row address={address} symbol="CELO" />
-        <Row address={address} token={cUSD_ADDRESS} symbol="cUSD" />
-        <Row address={address} token={USDC_ADDRESS} symbol="USDC" />
-        <Row address={address} token={USDT_ADDRESS} symbol="USDT" />
+        {balances.map((balance) => (
+          <BalanceRow
+            key={balance.symbol}
+            symbol={balance.symbol}
+            balance={balance.balance}
+            isLoading={isLoading}
+          />
+        ))}
       </div>
     </section>
   );
